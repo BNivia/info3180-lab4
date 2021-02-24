@@ -5,8 +5,8 @@
   <h1 class="page-header">Uploads</h1>
     {% include 'flash_messages.html' %}
   <div class="img-set">
-    {% for img in img_set %}
-      <img src="url_for(filename = {{ img }})" alt="Image" />
+    {% for img in img_set%}
+      <img class="img" src="{{ url_for('get_image', filename= img) }}" alt="Images" />
     {% endfor %}
   </div>
 {% endblock %}

@@ -14,12 +14,10 @@ from .forms import UploadForm
 # Helpers
 ###
 def get_uploaded_images():
-    rootdir = os.getcwd()
     flist = []
-    
-    for subdir,dirs,files in os.walk(rootdir + '/uploads'):
+    for subdir,dirs,files in os.walk(os.path.join(app.config['UPLOAD_FOLDER'])):
         for file in files:
-            flist.append(os.path.join(subdir,file))
+            flist.append(file)
     return flist
 ###
 # Routing for your application.
@@ -52,7 +50,7 @@ def upload():
             
             filename = secure_filename(photo.filename)
             photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash('File Saved', 'success')
+            flash('File Saved.', 'success')
             return redirect(url_for('home'))
         else:
             flash_errors(form)
@@ -60,9 +58,10 @@ def upload():
 
 @app.route('/uploads/<filename>')
 def get_image(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER',filename])
+    rootdir = os.getcwd()
+    return  send_from_directory(os.path.join(rootdir,app.config['UPLOAD_FOLDER']),filename)
 
-@app.route('/files/')
+@app.route('/files')
 def files():
     if not session.get('logged_in'):
         abort(401)
