@@ -46,7 +46,7 @@ def upload():
             return redirect(url_for('home'))
         else:
             flash_errors(form)
-    return render_template('upload.html')
+    return render_template('upload.html', form=form)
 
 
 @app.route('/login', methods=['POST', 'GET'])
