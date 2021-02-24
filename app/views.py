@@ -6,11 +6,21 @@ This file creates your application.
 """
 import os
 from app import app
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
 from werkzeug.utils import secure_filename
 from .forms import UploadForm
 
-
+###
+# Helpers
+###
+def get_uploaded_images():
+    rootdir = os.getcwd()
+    flist = []
+    
+    for subdir,dirs,files in os.walk(rootdir + '/uploads'):
+        for file in files:
+            flist.append(os.path.join(subdir,file))
+    return flist
 ###
 # Routing for your application.
 ###
@@ -48,8 +58,18 @@ def upload():
             flash_errors(form)
     return render_template('upload.html', form=form)
 
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER',filename])
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/files/')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    imgs = get_uploaded_images()
+    return render_template('files.html',img_set=imgs)
+
+@app.route('/login')
 def login():
     error = None
     if request.method == 'POST':
@@ -68,6 +88,7 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out', 'success')
     return redirect(url_for('home'))
+
 
 
 ###
